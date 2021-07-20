@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/js/face-api.js"></script>
+  <script src="/js/faceLandmark.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+	
+</head>
+<body>
+	<img id="img" src="/jo1.jpg" width="400px" height="600px"style=""/>
+	<canvas id="canvas" style=""></canvas>
+	
+  <script>
+	  const img=document.getElementById('img');
+	  const canvas=document.getElementById('canvas');
+	  const input=document.getElementById('input');
+	
+	  async function load(){
+		  await loadModels();
+		  
+		  
+		  const resizedResults=await getFullFaceDescription(img.src,{width:img.width,height:img.height});
+		  
+		  canvas.width=img.width;
+		  canvas.height=img.height;
+		  
+		 await drawFaceLandmark(canvas,resizedResults);
+	  }
+	  load();
+	  
+  </script>
+</body>
+</html>
