@@ -7,18 +7,21 @@
 	
 </head>
 <body>
-	<img id="img" src="/jo1.jpg" width="400px" height="600px"style=""/>
-	<canvas id="canvas" style=""></canvas>
+	<img id="img" src="/cw1.jpg" width="400px" height="600px"style="position:absolute;"/>
+	<canvas id="canvas" style="position:absolute;"></canvas>
 	
   <script>
 	  const img=document.getElementById('img');
 	  const canvas=document.getElementById('canvas');
 	  const input=document.getElementById('input');
 	
+	  
+	window.onload=async()=>{
+		await loadModels();
+		const resizedResults=await getFullFaceDescription(img.src,{width:img.width,height:img.height});
+	};
+	  
 	  async function load(){
-		  await loadModels();
-		  
-		  
 		  const resizedResults=await getFullFaceDescription(img.src,{width:img.width,height:img.height});
 		  
 		  canvas.width=img.width;
@@ -26,7 +29,6 @@
 		  
 		 await drawFaceLandmark(canvas,resizedResults);
 	  }
-	  load();
 	  
   </script>
 </body>

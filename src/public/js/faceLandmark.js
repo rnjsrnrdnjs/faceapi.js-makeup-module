@@ -1,27 +1,44 @@
 
 async function loadModels(){
 	const MODEL_URL="/models";
-	faceapi.loadTinyFaceDetectorModel(MODEL_URL).then(() => {
+	Promise.all([
+    	faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+	]).then((val) => {
+    // console here gives an array of undefined
+		console.log(val);
+		load();
+		/*
+	    faceapi.detectSingleFace(img).then((value) => {
+	     console.log(value)
+	    }).catch((err) => { console.log(err) });
+		*/
+	}).catch((err) => {
+	    console.log(err)
+	});
+	/*
+	faceapi.loadSsdMobilenetv1Model(MODEL_URL).then(() => {
     console.log("Completed loading Face model");
+	MODELLOAD=true;
+	load();
   });
-  	faceapi.loadFaceLandmarkTinyModel(MODEL_URL).then(() => {
+  	faceapi.loadFaceLandmarkModel(MODEL_URL).then(() => {
     console.log("Completed loading Landmark model");
-  });
+	LANDLOAD=true;
+	load();
+  });*/
 }
 
 async function getFullFaceDescription(blob, imageSize, inputSize = 416){
-	let srcoreThreshold=0.3;
-	const OPTION = new faceapi.TinyFaceDetectorOptions({
-    inputSize,
-    scoreThreshold
+  const OPTION = new faceapi.SsdMobilenetv1Options({
+      minConfidence:0.5,
   });
-  const useTinyModel = true;
   let img = await faceapi.fetchImage(blob);
-  let detections =
-    (await faceapi
+  let detections =await faceapi
       .detectAllFaces(img, OPTION)
-      .withFaceLandmarks(useTinyModel)) || {};
-	
+      .withFaceLandmarks()
+  
   const resizeResults = faceapi.resizeResults(detections, imageSize);
   return resizeResults;
 }
