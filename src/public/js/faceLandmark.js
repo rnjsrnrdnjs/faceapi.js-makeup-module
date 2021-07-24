@@ -6,43 +6,34 @@ async function loadModels(){
     faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
 	]).then((val) => {
-    // console here gives an array of undefined
-		console.log(val);
-		load();
-		/*
-	    faceapi.detectSingleFace(img).then((value) => {
-	     console.log(value)
-	    }).catch((err) => { console.log(err) });
-		*/
+		console.log("model load complete");
 	}).catch((err) => {
+		console.log("model load fail");
 	    console.log(err)
 	});
-	/*
-	faceapi.loadSsdMobilenetv1Model(MODEL_URL).then(() => {
-    console.log("Completed loading Face model");
-	MODELLOAD=true;
-	load();
-  });
-  	faceapi.loadFaceLandmarkModel(MODEL_URL).then(() => {
-    console.log("Completed loading Landmark model");
-	LANDLOAD=true;
-	load();
-  });*/
+}
+async function faceDetection(blob,imageSize){
+	const OPTION=new faceapi.SsdMobilenetv1Options({
+		minConfidence:0.8,
+	})
+	let img = await faceapi.fetchImage(blob);
+	let detections =await faceapi.detectAllFaces(img, OPTION);
+	
+    const resizeResults = faceapi.resizeResults(detections, imageSize);
+    return resizeResults;
 }
 
-async function getFullFaceDescription(blob, imageSize, inputSize = 416){
-  const OPTION = new faceapi.SsdMobilenetv1Options({
-      minConfidence:0.5,
-  });
-  let img = await faceapi.fetchImage(blob);
-  let detections =await faceapi
-      .detectAllFaces(img, OPTION)
-      .withFaceLandmarks()
-  
-  const resizeResults = faceapi.resizeResults(detections, imageSize);
-  return resizeResults;
+
+
+async function faceLandmark(blob,imageSize){
+	const OPTION=new faceapi.SsdMobilenetv1Options({
+		minConfidence:0.8,
+	})
+	let img = await faceapi.fetchImage(blob);
+	let detections =await faceapi.detectSingleFace(img, OPTION).withFaceLandmarks();
+    const resizeResults = faceapi.resizeResults(detections, imageSize);
+    return resizeResults;
 }
 
-async function drawFaceLandmark(canvas,resizedResults){
-	faceapi.draw.drawFaceLandmarks(canvas, resizedResults);
-}
+
+

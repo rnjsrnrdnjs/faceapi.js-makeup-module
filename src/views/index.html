@@ -1,35 +1,105 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <script src="/js/face-api.js"></script>
-  <script src="/js/faceLandmark.js"></script>
-  <link rel="stylesheet" href="/styles.css">
-	
-</head>
-<body>
-	<img id="img" src="/cw1.jpg" width="400px" height="600px"style="position:absolute;"/>
-	<canvas id="canvas" style="position:absolute;"></canvas>
-	
-  <script>
-	  const img=document.getElementById('img');
-	  const canvas=document.getElementById('canvas');
-	  const input=document.getElementById('input');
-	
-	  
-	window.onload=async()=>{
-		await loadModels();
-		const resizedResults=await getFullFaceDescription(img.src,{width:img.width,height:img.height});
-	};
-	  
-	  async function load(){
-		  const resizedResults=await getFullFaceDescription(img.src,{width:img.width,height:img.height});
-		  
-		  canvas.width=img.width;
-		  canvas.height=img.height;
-		  
-		 await drawFaceLandmark(canvas,resizedResults);
-	  }
-	  
-  </script>
-</body>
+	<head>
+		<script src="/js/face-api.js"></script>
+		<script src="/js/faceLandmark.js"></script>
+		<link rel="stylesheet" href="/styles.css" />
+	</head>
+	<body>
+		<div style="display: flex; flex-direction: column;">
+			사진
+			<input
+				id="myFileUpload"
+				type="file"
+				onchange="uploadImage()"
+				accept=".jpg, .jpeg, .png"
+			/>
+		</div>
+			<div>
+			<img id="myImg" src=""  style="position:absolute;max-width:500px;"/>
+			<canvas id="canvas" style="position:absolute;"></canvas>
+			</div>
+		<script>
+			window.onload = async () => {
+				await loadModels();
+			};
+			const canvas = document.getElementById('canvas');
+			const ctx=canvas.getContext('2d');
+			const ctxLine=2;
+			
+			const  myImg=document.getElementById('myImg');
+			async function uploadImage() {
+				const imgFile = document.getElementById('myFileUpload').files[0];
+				const faceImg = await faceapi.bufferToImage(imgFile);
+				myImg.src = faceImg.src;
+				await detectionLoad();
+			}
+			
+			
+			async function detectionLoad() {
+				const img=document.getElementById('myImg');
+				
+				const resizedResults = await faceDetection(img.src, {
+					width: img.width,
+					height: img.height,
+				});
+				canvas.width = img.width;
+				canvas.height = img.height;
+				for(let i in resizedResults){
+					ctx.strokeStyle="white";
+					ctx.lineWidth = ctxLine; 
+			 		ctx.setLineDash([4,3]) ;
+					ctx.lineCap ="round";
+					const width=resizedResults[i].box.right-resizedResults[i].box.left;
+					const height=resizedResults[i].box.bottom-resizedResults[i].box.top;
+					ctx.strokeRect(resizedResults[i].box.x,resizedResults[i].box.y,width,height);
+					canvas.addEventListener('click',async function(){
+						const x = event.clientX-ctx.canvas.offsetLeft; 
+			            const y = event.clientY - ctx.canvas.offsetTop; 
+						if( resizedResults[i].box.x <=x && x<= resizedResults[i].box.x+width && resizedResults[i].box.y<=y && y <=resizedResults[i].box.y+height){
+							const regionsToExtract=[
+								new faceapi.Rect(resizedResults[i].box.x,resizedResults[i].box.y,width,height)
+							];
+							let regionImg = await faceapi.fetchImage(img.src);
+							const faceCanvas=await faceapi.extractFaces(regionImg,regionsToExtract);
+    						const clone = canvas.cloneNode(true);
+							canvas.parentNode.replaceChild(clone, canvas);
+							faceSelectAfter(faceCanvas);
+						}
+					});
+				}
+			}
+			async function deleteCanvas(resizedResults ){
+				for(let i in resizedResults){
+					const width=resizedResults[i].box.right-resizedResults[i].box.left;
+					const height=resizedResults[i].box.bottom-resizedResults[i].box.top;
+					ctx.clearRect(resizedResults[i].box.x-ctxLine,resizedResults[i].box.y-ctxLine,width+ctxLine*2,height+ctxLine*2);
+				}
+			}
+			async function faceSelectAfter(face){
+				let imageObj=new Image();
+				imageObj.onload=await function(){
+					ctx.drawImage();
+				}
+				/*
+				const resizedResults2 = await faceLandmark(img.src, {
+					width: img.width,
+					height: img.height,
+				});
+				*/
+					let img = await faceapi.fetchImage(face);
+				const OPTION=new faceapi.SsdMobilenetv1Options({
+		minConfidence:0.8,
+	})
+	let detections =await faceapi.detectSingleFace(face, OPTION).withFaceLandmarks();
+    const resizeResults = faceapi.resizeResults(detections, 512);
+
+				/*
+				console.log(resizedResults2.positions);
+				console.log(resizedResults2.getJawOutline());*/
+				//await faceapi.draw.drawFaceLandmarks(canvas,resizedResults2);
+				
+			}
+		</script>
+	</body>
 </html>
