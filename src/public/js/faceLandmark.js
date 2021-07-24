@@ -50,6 +50,7 @@ async function faceLandmark(blob,imageSize,idx){
     	lipOuter: detections[idx].landmarks.positions.slice(48, 60),
     	lipInner: detections[idx].landmarks.positions.slice(60),
   	};
+
 	//console.log(detections.landmarks.getNose());
     const resizeResults = faceapi.resizeResults(detections, imageSize);
     return [resizeResults,features];

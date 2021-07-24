@@ -4,6 +4,7 @@
 		<script src="/js/face-api.js"></script>
 		<script src="/js/faceLandmark.js"></script>
 		<script src="/js/makeUp.js"></script>
+		<script src="/js/hull.js"></script>
 		
 		<link rel="stylesheet" href="/styles.css" />
 	</head>
@@ -18,8 +19,9 @@
 			/>
 		</div>
 			<div>
-			<img id="myImg" src=""  style="position:absolute;"/>
-			<canvas id="canvas" style="position:absolute;"></canvas>
+			<img id="myImg" src=""  style="position:absolute;z-index:1"/>
+			<canvas id="canvas" style="position:absolute;z-index:3"></canvas>
+			<canvas id="makeUp" style="position:absolute;z-index:2"></canvas>
 			</div>
 		<script>
 			// faceapi 에 필요한 모델들을 로드해준다.
@@ -39,6 +41,7 @@
 			async function detectionLoad() {
 				const img=document.getElementById('myImg');
 				let canvas = document.getElementById('canvas');
+				let makeUp = document.getElementById('makeUp');
 				const ctx=canvas.getContext('2d');
 				const ctxLine=2;
 				
@@ -48,6 +51,8 @@
 				});
 				canvas.width = img.width;
 				canvas.height = img.height;
+				makeUp.width = img.width;
+				makeUp.height = img.height;
 				for(let i in resizedResults){
 					ctx.strokeStyle="white";
 					ctx.lineWidth = ctxLine; 
