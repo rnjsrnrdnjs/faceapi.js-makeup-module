@@ -12,10 +12,12 @@ async function loadModels(){
 	    console.log(err)
 	});
 }
+
+const OPTION=new faceapi.SsdMobilenetv1Options({
+	minConfidence:0.8,
+});
+
 async function faceDetection(blob,imageSize){
-	const OPTION=new faceapi.SsdMobilenetv1Options({
-		minConfidence:0.8,
-	})
 	let img = await faceapi.fetchImage(blob);
 	let detections =await faceapi.detectAllFaces(img, OPTION);
 	
@@ -24,15 +26,33 @@ async function faceDetection(blob,imageSize){
 }
 
 
-
-async function faceLandmark(blob,imageSize){
-	const OPTION=new faceapi.SsdMobilenetv1Options({
-		minConfidence:0.8,
-	})
+async function faceLandmark(blob,imageSize,idx){
 	let img = await faceapi.fetchImage(blob);
-	let detections =await faceapi.detectSingleFace(img, OPTION).withFaceLandmarks();
+	let detections =await faceapi.detectAllFaces(img, OPTION).withFaceLandmarks();
+	console.log(detections);
+	const features = {
+		/*
+		jawOutline : detections.landmarks.getJawOutline(),
+		nose : detections.landmarks.getNose(),
+		mouth : detections.landmarks.getMouth(),
+		leftEye : detections.landmarks.getLeftEye(),
+		rightEye : detections.landmarks.getRightEye(),
+		leftEyeBbrow : detections.landmarks.getLeftEyeBrow(),
+		rightEyeBrow : detections.landmarks.getRightEyeBrow(),
+		*/
+    	jaw: detections[idx].landmarks.positions.slice(0, 17),
+    	eyebrowLeft: detections[idx].landmarks.positions.slice(17, 22),
+    	eyebrowRight: detections[idx].landmarks.positions.slice(22, 27),
+    	noseBridge: detections[idx].landmarks.positions.slice(27, 31),
+    	nose: detections[idx].landmarks.positions.slice(31, 36),
+    	eyeLeft: detections[idx].landmarks.positions.slice(36, 42),
+    	eyeRight: detections[idx].landmarks.positions.slice(42, 48),
+    	lipOuter: detections[idx].landmarks.positions.slice(48, 60),
+    	lipInner: detections[idx].landmarks.positions.slice(60),
+  	};
+	//console.log(detections.landmarks.getNose());
     const resizeResults = faceapi.resizeResults(detections, imageSize);
-    return resizeResults;
+    return [resizeResults,features];
 }
 
 
