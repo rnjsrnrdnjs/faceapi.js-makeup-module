@@ -5,10 +5,11 @@
 		<script src="/js/faceLandmark.js"></script>
 		<script src="/js/makeUp.js"></script>
 		<script src="/js/hull.js"></script>
+		<script src="/js/resizeImage.js"></script>
 		
 		<link rel="stylesheet" href="/styles.css" />
 	</head>
-	<body>
+	<body style="max-width:1024px; margin:0 auto;">
 		<div style="display: flex; flex-direction: column;">
 			사진
 			<input
@@ -18,10 +19,12 @@
 				accept=".jpg, .jpeg, .png"
 			/>
 		</div>
-			<div>
-			<img id="myImg" src=""  style="position:absolute;z-index:1"/>
-			<canvas id="canvas" style="position:absolute;z-index:3"></canvas>
-			<canvas id="makeUp" style="position:absolute;z-index:2"></canvas>
+			<div id="imgContainer"style="max-width: 100%;
+    display: flex;height:80vh;justify-content: center;
+    align-items: center;">
+			<img id="myImg" src=""  style="z-index:1;"/>
+			<canvas id="canvas" style="position:absolute;z-index:3;"></canvas>
+			<canvas id="makeUp" style="position:absolute;z-index:2;"></canvas>
 			</div>
 		<script>
 			// faceapi 에 필요한 모델들을 로드해준다.
@@ -33,7 +36,8 @@
 			async function uploadImage() {
 				const imgFile = document.getElementById('myFileUpload').files[0];
 				const faceImg = await faceapi.bufferToImage(imgFile);
-				myImg.src = faceImg.src;
+				const url=await resizeImage(faceImg);
+				myImg.src = await url;
 				await detectionLoad();
 			}
 			
@@ -44,7 +48,7 @@
 				let makeUp = document.getElementById('makeUp');
 				const ctx=canvas.getContext('2d');
 				const ctxLine=2;
-				
+				console.log(img.width,img.height);
 				const resizedResults = await faceDetection(img.src, {
 					width: img.width,
 					height: img.height,
@@ -53,6 +57,7 @@
 				canvas.height = img.height;
 				makeUp.width = img.width;
 				makeUp.height = img.height;
+				console.log(resizedResults);
 				for(let i in resizedResults){
 					ctx.strokeStyle="white";
 					ctx.lineWidth = ctxLine; 
@@ -64,7 +69,6 @@
 					canvas.addEventListener('click',async function(){
 						const x = event.clientX-ctx.canvas.offsetLeft; 
 			            const y = event.clientY - ctx.canvas.offsetTop; 
-						console.log(x,y);
 						if( resizedResults[i].box.x <=x && x<= resizedResults[i].box.x+width && resizedResults[i].box.y<=y && y <=resizedResults[i].box.y+height){
 							
 							/*
@@ -76,6 +80,8 @@
 							*/
 							
 							// 캔버스 이벤트를 전부 제거하기위해 canvas 복제 사용
+							faceX=resizedResults[i].box.x;faceDx=width;
+							faceY=resizedResults[i].box.y;faceDy=height;
     						const clone = await canvas.cloneNode(true);
 							canvas.parentNode.replaceChild(clone, canvas);
 							const selectIdx=i;

@@ -1,11 +1,14 @@
-async function makeUploading(resizedResults,features){
-	console.log(features);
+let faceX,faceY,faceDx,faceDy;
+let features;
+async function makeUploading(resizedResults,featuresFace){
+	console.log(featuresFace);
+	features=featuresFace;
 	const canvas=document.getElementById('canvas');
 	const ctx=canvas.getContext('2d');
 	const myImg=document.getElementById('myImg');
 
 	await facePoint(features);
-	await foundation();
+	//await foundation();
 }
 async function foundation(){
 	const canvas=document.getElementById('canvas');
@@ -16,19 +19,56 @@ async function foundation(){
 	const myImg=document.getElementById('myImg');
 	
 	mtx.drawImage(myImg,0,0);
-	let r=235,g=188,b=142;
-	let minR=0,minG=0,minB=0;
+	let r=247,g=233,b=211,a=1;
 	let imageData=mtx.getImageData(0,0,makeUp.width,makeUp.height);
-	for(let i=0;i<imageData.data.length;i+=4){
-		minR=Math.max(minR,Math.abs(imageData.data[i]-r));
-		minG=Math.max(minG,Math.abs(imageData.data[i+1]-g));
-		minB=Math.max(minB,Math.abs(imageData.data[i+2]-b));
+	
+	let centerJx=0,centerJy=0;
+	for(let i=0;i<features.jaw.length;i++){
+		centerJx+=features.jaw[i].x;
+		centerJy+=features.jaw[i].y;
 	}
-	console.log(minR,minG,minB);
+	centerJx/=features.jaw.length;
+	centerJy/=features.jaw.length;
+	console.log(centerJx,centerJy);
+	let faceR,faceG,faceB,faceA;
+	
+	let cx=0,cy=0;
 	for(let i=0;i<imageData.data.length;i+=4){
-		imageData.data[i]+=minR;
-		imageData.data[i+1]+=minG;
-		imageData.data[i+2]+=minB;
+		if(faceX<=cx && cx<=faceX+faceDx && faceY<=cy && cy<=faceY+faceDy){
+		
+		for(let j=0;j<features.jaw.length;j++){
+			if(cx==Math.floor(features.jaw[j].x) && cy==Math.floor(features.jaw[j].y)){
+				console.log(true);
+				faceR=imageData.data[i];
+				faceG=imageData.data[i+1];
+				faceB=imageData.data[i+2];
+				faceA=imageData.data[i+3];
+				console.log(faceR,faceG,faceB);
+			}
+		}
+		}
+		cx++;
+		if(cx==makeUp.width){
+			cy++;
+			cx%=makeUp.width;
+		}
+	}
+	
+	cx=0,cy=0;
+	for(let i=0;i<imageData.data.length;i+=4){
+		if(faceX<=cx && cx<=faceX+faceDx && faceY<=cy && cy<=faceY+faceDy){
+	//		if(Math.abs(imageData.data[i]-r)<=50 && Math.abs(imageData.data[i+1]-g)<=150 && Math.abs(imageData.data[i+2]-b)<=150 ){
+				imageData.data[i]+=25
+				imageData.data[i+1]+=25
+				imageData.data[i+2]+=25
+		//	}
+		}
+		
+		cx++;
+		if(cx==makeUp.width){
+			cy++;
+			cx%=makeUp.width;
+		}
 	}
 	
 	mtx.putImageData(imageData,0,0);
