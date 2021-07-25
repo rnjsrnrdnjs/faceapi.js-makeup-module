@@ -6,18 +6,22 @@ async function resizeImage(img){
 	const max_height=imgContainer.offsetHeight;
 	let width=img.width;
 	let height=img.height;
-	console.log(width,max_width);
-	console.log(height,max_height);
 
 	height*=max_width/width;
 	width=max_width;
 	width=Math.floor(width);
 	height=Math.floor(height);
+
 	
 	width*=max_height/height;
 	height=max_height;
 	width=Math.floor(width);
 	height=Math.floor(height);
+
+	
+	
+
+	
 	
 	const myImg=document.getElementById('myImg');
 	myImg.width=width;

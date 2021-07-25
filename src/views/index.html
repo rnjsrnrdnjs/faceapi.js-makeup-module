@@ -46,9 +46,10 @@
 				const img=document.getElementById('myImg');
 				let canvas = document.getElementById('canvas');
 				let makeUp = document.getElementById('makeUp');
+				
+				canvas.style.display = 'flex';
 				const ctx=canvas.getContext('2d');
 				const ctxLine=2;
-				console.log(img.width,img.height);
 				const resizedResults = await faceDetection(img.src, {
 					width: img.width,
 					height: img.height,
@@ -57,7 +58,6 @@
 				canvas.height = img.height;
 				makeUp.width = img.width;
 				makeUp.height = img.height;
-				console.log(resizedResults);
 				for(let i in resizedResults){
 					ctx.strokeStyle="white";
 					ctx.lineWidth = ctxLine; 

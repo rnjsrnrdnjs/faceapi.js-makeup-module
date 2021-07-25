@@ -14,7 +14,7 @@ async function loadModels(){
 }
 
 const OPTION=new faceapi.SsdMobilenetv1Options({
-	minConfidence:0.8,
+	minConfidence:0.5,
 });
 
 async function faceDetection(blob,imageSize){
@@ -29,7 +29,6 @@ async function faceDetection(blob,imageSize){
 async function faceLandmark(blob,imageSize,idx){
 	let img = await faceapi.fetchImage(blob);
 	let detections =await faceapi.detectAllFaces(img, OPTION).withFaceLandmarks();
-	console.log(detections);
 	const features = {
 		/*
 		jawOutline : detections.landmarks.getJawOutline(),
