@@ -39,3 +39,8 @@
 # 참고
 https://earningbirds.netlify.app/development/face-cropping-using-face-api.js/
 
+
+![스크린샷(31)](https://user-images.githubusercontent.com/49832278/129476965-a73b2c9d-e823-491d-ba69-c1edd9c455e9.png)
+![스크린샷(32)](https://user-images.githubusercontent.com/49832278/129476967-186740de-e689-4249-93e1-cf5fdf03c445.png)
+
+--작동완료--
