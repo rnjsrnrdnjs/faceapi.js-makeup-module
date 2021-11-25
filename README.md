@@ -1,10 +1,17 @@
-# -image-synthesis
+# faceapi.js-makeup-module
  image synthesis
 
 인공지능 
 
 이미지,영상 얼굴 확인 및
 영상처리 기반 얼굴 합성 api
+
+
+
+![스크린샷(31)](https://user-images.githubusercontent.com/49832278/129476965-a73b2c9d-e823-491d-ba69-c1edd9c455e9.png)
+![스크린샷(32)](https://user-images.githubusercontent.com/49832278/129476967-186740de-e689-4249-93e1-cf5fdf03c445.png)
+
+--현재 얼굴인식및 좌표값 얻기 까지 완료후 화장을 위한 다양한 모듈 업데이트 준비중입니다.--
 
 
 # --사진--
@@ -39,8 +46,3 @@
 # 참고
 https://earningbirds.netlify.app/development/face-cropping-using-face-api.js/
 
-
-![스크린샷(31)](https://user-images.githubusercontent.com/49832278/129476965-a73b2c9d-e823-491d-ba69-c1edd9c455e9.png)
-![스크린샷(32)](https://user-images.githubusercontent.com/49832278/129476967-186740de-e689-4249-93e1-cf5fdf03c445.png)
-
---작동완료--
